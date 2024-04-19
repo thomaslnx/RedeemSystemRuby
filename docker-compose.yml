@@ -1,0 +1,36 @@
+services:
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: railsapp
+      MYSQL_DATABASE: thanx
+      MYSQL_USER: thanx
+      MYSQL_PASSWORD: railsapp
+    ports:
+      - "3306:3306"
+    volumes:
+    - db:/var/run/mysqld
+
+  backend:
+    build: 
+      context: .
+      target: base
+      dockerfile: Dockerfile
+    command: bundle exec rails s -p 3000 -b '0.0.0.0'
+    volumes:
+      - .:/rails
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    links:
+      - db
+    environment:
+          DB_USER: thanx
+          DB_NAME: thanx
+          DB_PASSWORD: railsapp
+          DB_HOST: db
+          DB_PORT: 3306
+
+volumes:
+  db:
